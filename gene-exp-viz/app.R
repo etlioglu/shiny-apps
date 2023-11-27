@@ -2,7 +2,8 @@ library(shiny)
 library(geneSynonym)
 library(ggplot2)
 
-exp_meta_df <- readRDS("downsampled-deseq2-normalized-expression-for-tcgaovc-and-all-gtex.rds")
+exp_meta_df <-
+  readRDS("deseq2-normalized-expression-for-tcgaovc-and-all-gtex.rds")
 genes_present <- colnames(exp_meta_df)[-1]
 
 check_gene <- function(x) {
@@ -23,7 +24,6 @@ check_gene <- function(x) {
 }
 
 ui <- fluidPage(
-  
   titlePanel(
     "Gene expession visualiazion with the TCGA-TARGET-GTEx transcriptomics dataset"
   ),
@@ -37,6 +37,10 @@ ui <- fluidPage(
         width = NULL,
         placeholder = NULL
       ),
+      
+      # download button
+      downloadButton("download_data", "Download"),
+      
       width = 2
     ),
     
@@ -49,9 +53,7 @@ ui <- fluidPage(
 
 server <- function(input, output) {
   
-  output$gene <- renderText({
-    check_gene(input$gene_symbol)
-  })
+  # save check_gene(input$gene_symbol) in a variable in order not to call this multiple times
   
   output$gene_exp_plot <- renderPlot({
     ggplot(
@@ -73,7 +75,27 @@ server <- function(input, output) {
       ) +
       coord_flip()
   })
+  
+  output$to_download <-
+    
+    output$download_data <- downloadHandler(
+      filename = function() {
+        paste0(check_gene(input$gene_symbol), ".csv")
+      },
+      content = function(file) {
+        write.table(
+          exp_meta_df[, c("sample",
+                          "TCGA_GTEX_main_category",
+                          check_gene(input$gene_symbol))],
+          file = file,
+          quote = FALSE,
+          sep = ",",
+          row.names = FALSE
+        )
+      }
+    )
+  
 }
 
-# Run the application
+# Run
 shinyApp(ui = ui, server = server)
