@@ -2,7 +2,7 @@ library(shiny)
 library(geneSynonym)
 library(ggplot2)
 
-exp_meta_df <- readRDS("deseq2-normalized-expression-for-tcgaovc-and-all-gtex.rds")
+exp_meta_df <- readRDS("downsampled-deseq2-normalized-expression-for-tcgaovc-and-all-gtex.rds")
 genes_present <- colnames(exp_meta_df)[-1]
 
 check_gene <- function(x) {
@@ -37,7 +37,7 @@ ui <- fluidPage(
         width = NULL,
         placeholder = NULL
       ),
-      width = 2,
+      width = 2
     ),
     
     mainPanel(textOutput("gene"),
