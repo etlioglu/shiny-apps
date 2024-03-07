@@ -1,9 +1,15 @@
+library(data.table)
 library(shiny)
 library(geneSynonym)
 library(ggplot2)
 
+source(
+  "https://raw.githubusercontent.com/etlioglu/bioinformatics/main/templates/customize-ggplot.r"
+)
+
 exp_meta_df <-
-  readRDS("deseq2-normalized-expression-for-tcgaovc-and-all-gtex.rds")
+  fread("tcga-gtex-normalized-ovc-colorectal-gbm-bc-protein-coding-only.csv")
+
 genes_present <- colnames(exp_meta_df)[-1]
 
 check_gene <- function(x) {
@@ -44,16 +50,21 @@ ui <- fluidPage(
       width = 2
     ),
     
-    mainPanel(textOutput("gene"),
-              plotOutput("gene_exp_plot"),
-              width = 11)
+    mainPanel(
+      textOutput("gene"),
+      
+      tabsetPanel(
+        tabPanel("Four cancers", plotOutput("gene_exp_plot"))
+      )
+    )
   )
 )
 
 
 server <- function(input, output) {
-  
   # save check_gene(input$gene_symbol) in a variable in order not to call this multiple times
+  
+  # output$gene <- check_gene(reactive(input$gene_symbol))
   
   output$gene_exp_plot <- renderPlot({
     ggplot(
