@@ -49,14 +49,15 @@ ui <- fluidPage(
       
       width = 2
     ),
-    
-    mainPanel(
-      textOutput("gene"),
-      
-      tabsetPanel(
-        tabPanel("Four cancers", plotOutput("gene_exp_plot"))
-      )
-    )
+    mainPanel(textOutput("gene"),
+              
+              tabsetPanel(
+                tabPanel("Four cancers", plotOutput("gene_exp_plot")),
+                tabPanel("Ovarian cancer", plotOutput("gene_exp_plot_ovarian")),
+                tabPanel("Colorectal cancer", plotOutput("gene_exp_plot_colorectal")),
+                tabPanel("GBM", plotOutput("gene_exp_plot_gbm")),
+                tabPanel("Breast cancer", plotOutput("gene_exp_plot_breast"))
+              ))
   )
 )
 
@@ -66,6 +67,10 @@ server <- function(input, output) {
   
   # output$gene <- check_gene(reactive(input$gene_symbol))
   
+  # This massive code duplication will be taken care of later
+  
+  # Four cancers
+  
   output$gene_exp_plot <- renderPlot({
     ggplot(
       exp_meta_df,
@@ -74,6 +79,98 @@ server <- function(input, output) {
         y = check_gene(input$gene_symbol),
         color = "TCGA_GTEX_main_category"
       )
+    ) +
+      geom_jitter(size = 0.5) +
+      theme(
+        axis.text.x = element_text(
+          angle = 90,
+          vjust = 0.5,
+          hjust = 1
+        ),
+        legend.position = "none"
+      ) +
+      coord_flip()
+  })
+  
+  # ovarian
+  output$gene_exp_plot_ovarian <- renderPlot({
+    
+    filtered_exp_meta_df <- exp_meta_df[startsWith(TCGA_GTEX_main_category, "GTEX") | TCGA_GTEX_main_category == "TCGA Ovarian Serous Cystadenocarcinoma"]
+    
+    ggplot(
+      filtered_exp_meta_df,
+      aes_string(x = "TCGA_GTEX_main_category",
+                 y = check_gene(input$gene_symbol),
+                 color = "TCGA_GTEX_main_category")
+    ) +
+      geom_jitter(size = 0.5) +
+      theme(
+        axis.text.x = element_text(
+          angle = 90,
+          vjust = 0.5,
+          hjust = 1
+        ),
+        legend.position = "none"
+      ) +
+      coord_flip()
+  })
+  
+  # colorectal
+  output$gene_exp_plot_colorectal <- renderPlot({
+    
+    filtered_exp_meta_df <- exp_meta_df[startsWith(TCGA_GTEX_main_category, "GTEX") | TCGA_GTEX_main_category == "TCGA Colorectal Cancer"]
+    
+    ggplot(
+      filtered_exp_meta_df,
+      aes_string(x = "TCGA_GTEX_main_category",
+                 y = check_gene(input$gene_symbol),
+                 color = "TCGA_GTEX_main_category")
+    ) +
+      geom_jitter(size = 0.5) +
+      theme(
+        axis.text.x = element_text(
+          angle = 90,
+          vjust = 0.5,
+          hjust = 1
+        ),
+        legend.position = "none"
+      ) +
+      coord_flip()
+  })
+  
+  # gbm
+  output$gene_exp_plot_gbm <- renderPlot({
+    
+    filtered_exp_meta_df <- exp_meta_df[startsWith(TCGA_GTEX_main_category, "GTEX") | TCGA_GTEX_main_category == "TCGA Glioblastoma Multiforme"]
+    
+    ggplot(
+      filtered_exp_meta_df,
+      aes_string(x = "TCGA_GTEX_main_category",
+                 y = check_gene(input$gene_symbol),
+                 color = "TCGA_GTEX_main_category")
+    ) +
+      geom_jitter(size = 0.5) +
+      theme(
+        axis.text.x = element_text(
+          angle = 90,
+          vjust = 0.5,
+          hjust = 1
+        ),
+        legend.position = "none"
+      ) +
+      coord_flip()
+  })
+  
+  # breast
+  output$gene_exp_plot_breast <- renderPlot({
+    
+    filtered_exp_meta_df <- exp_meta_df[startsWith(TCGA_GTEX_main_category, "GTEX") | TCGA_GTEX_main_category == "TCGA Breast Invasive Carcinoma"]
+    
+    ggplot(
+      filtered_exp_meta_df,
+      aes_string(x = "TCGA_GTEX_main_category",
+                 y = check_gene(input$gene_symbol),
+                 color = "TCGA_GTEX_main_category")
     ) +
       geom_jitter(size = 0.5) +
       theme(
