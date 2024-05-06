@@ -10,7 +10,7 @@ source(
 exp_meta_df <-
   fread("tcga-gtex-normalized-ovc-colorectal-gbm-bc-protein-coding-only.csv")
 
-loc_df <- fread("https://raw.githubusercontent.com/etlioglu/bioinformatics/main/references/subcellular-location/human-protein-atlas/subcellular_location.tsv")
+loc_df <- fread("https://raw.githubusercontent.com/etlioglu/bioinformatics/main/references/subcellular-location/uniprot-parsed.csv")
 
 
 genes_present <- colnames(exp_meta_df)[-1]
@@ -49,6 +49,7 @@ ui <- fluidPage(
       
       # download button
       downloadButton("download_data", "Download"),
+      # text output
       textOutput("localization"),
       
       width = 2
@@ -207,7 +208,8 @@ server <- function(input, output) {
       }
     )
     
-    output$localization <- renderText({ unlist ( loc_df[`Gene name` == check_gene(input$gene_symbol),  "Main location"] ) })
+    output$localization <- renderText({ unlist ( loc_df[gene_name == check_gene(input$gene_symbol),  "subcell_loc"] ) 
+    })
   
 }
 
