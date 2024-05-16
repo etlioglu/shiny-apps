@@ -45,25 +45,29 @@ ui <- fluidPage(
         value = "ACE",
         width = NULL,
         placeholder = NULL
+        
       ),
       
       # download button
-      downloadButton("download_data", "Download"),
-      # text output
-      textOutput("localization"),
+      downloadButton("download_data", "Download expression data"),
+
+      htmlOutput("localization"),
       
-      width = 2
+      
+      width = 3
     ),
-    mainPanel(textOutput("gene"),
-              
-              tabsetPanel(
+    mainPanel(
+      # htmlOutput("localization"),
+      tabsetPanel(
                 tabPanel("Four cancers", plotOutput("gene_exp_plot")),
                 tabPanel("Ovarian cancer", plotOutput("gene_exp_plot_ovarian")),
                 tabPanel("Colorectal cancer", plotOutput("gene_exp_plot_colorectal")),
                 tabPanel("GBM", plotOutput("gene_exp_plot_gbm")),
                 tabPanel("Breast cancer", plotOutput("gene_exp_plot_breast"))
-              ))
-  )
+              )
+      
+  
+  ))
 )
 
 
@@ -195,6 +199,7 @@ server <- function(input, output) {
       filename = function() {
         paste0(check_gene(input$gene_symbol), ".csv")
       },
+      
       content = function(file) {
         write.table(
           exp_meta_df[, c("sample",
@@ -208,8 +213,20 @@ server <- function(input, output) {
       }
     )
     
-    output$localization <- renderText({ unlist ( loc_df[gene_name == check_gene(input$gene_symbol),  "subcell_loc"] ) 
+    # output$localization <- renderText({
+    #   unlist ( loc_df[gene_name == check_gene(input$gene_symbol),  "subcell_loc"] ) 
+    # })
+    
+    output$localization <- renderUI({
+      HTML(
+        paste(
+          "<br><b>Subcellular Location:</b><br><br>",
+          unlist ( loc_df[gene_name == check_gene(input$gene_symbol),  "subcell_loc"] )
+        )
+      )
     })
+    
+    
   
 }
 
