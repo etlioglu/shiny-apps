@@ -36,6 +36,9 @@ ui <- fluidPage(
   titlePanel(
     "Gene expession visualiazion with the TCGA-TARGET-GTEx transcriptomics dataset"
   ),
+  helpText(
+    "Please open the app in your browser (and not use Rstudio Viewer) to be able to use the provided Uniprot link"
+  ),
   
   sidebarLayout(
     sidebarPanel(
@@ -49,7 +52,9 @@ ui <- fluidPage(
       ),
       
       # download button
-      downloadButton("download_data", "Download expression data"),
+      downloadButton("download_data", "Download data"),
+      
+      uiOutput("test"),
 
       htmlOutput("localization"),
       
@@ -224,6 +229,25 @@ server <- function(input, output) {
           unlist ( loc_df[gene_name == check_gene(input$gene_symbol),  "subcell_loc"] )
         )
       )
+    })
+    
+    uniprot_url <- reactive({
+      
+    id <- unlist(loc_df[gene_name == check_gene(input$gene_symbol), "id"])
+      
+    addr <- paste0(
+      "https://www.uniprot.org/uniprotkb/",
+      id,
+      "/entry"
+    )
+    uniprot_url <- a(addr, href=addr, target="_blank")
+    
+    return(uniprot_url)
+    })
+    
+    output$test <- renderUI({
+      #tagList(" ", uniprot_url())
+      HTML(paste("<br>", uniprot_url()))
     })
     
     
